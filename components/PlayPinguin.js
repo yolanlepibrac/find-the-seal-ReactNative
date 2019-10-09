@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, ActivityIndicator, Button, TouchableOpacity, Di
 import { connect } from "react-redux";
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 
-import ImageChooserBear from "./ImageChooserBear"
+import ImageChooserpinguin from "./ImageChooserpinguin"
 import { changeAccountState } from "../redux/actions/index";
 import { setBestScoreToRedux } from "../redux/actions/index";
 import { setBestScore } from "../redux/actions/index";
@@ -37,9 +37,9 @@ class PlayComponent extends Component {
       ],
       numberOfIce : 4,
       timeIceDisapear : 1000,
-      bearPositionDynamicI: new Animated.Value(Constantes.screenWidth/numberSquares*(1/2+0)-25),
-      bearPositionDynamicJ: new Animated.Value(Constantes.screenWidth/numberSquares*(1/2+0)-25),
-      bearPosition:[0,0],
+      pinguinPositionDynamicI: new Animated.Value(Constantes.screenWidth/numberSquares*(1/2+0)-25),
+      pinguinPositionDynamicJ: new Animated.Value(Constantes.screenWidth/numberSquares*(1/2+0)-25),
+      pinguinPosition:[0,0],
       score:0,
       opacityPlus10: new Animated.Value(0),
       sizePlus10: new Animated.Value(100),
@@ -47,8 +47,8 @@ class PlayComponent extends Component {
       fontSizePlus10 : new Animated.Value(50),
       plus10 : false,
       placementPlus10 : [0,0],
-      backgroundImageBear : require("../assets/images/bear/bearRight.png"),
-      widthBear : new Animated.Value(50),
+      backgroundImagepinguin : require("../assets/images/pinguin/pinguinRight.png"),
+      widthpinguin : new Animated.Value(50),
     };
   }
 
@@ -87,7 +87,7 @@ class PlayComponent extends Component {
 
     let isOnIce = false
     for(k=0; k<icebergsPosition.length;k++){
-      if(icebergsPosition[k][0] === this.state.bearPosition[0] && icebergsPosition[k][1] === this.state.bearPosition[1]){
+      if(icebergsPosition[k][0] === this.state.pinguinPosition[0] && icebergsPosition[k][1] === this.state.pinguinPosition[1]){
         isOnIce = true
       }
     }
@@ -122,7 +122,7 @@ class PlayComponent extends Component {
   }
 
   winPlus10 = () => {
-    if(this.state.bearPosition[0] === this.state.placementPlus10[0] && this.state.bearPosition[1] === this.state.placementPlus10[1] && this.state.plus10){
+    if(this.state.pinguinPosition[0] === this.state.placementPlus10[0] && this.state.pinguinPosition[1] === this.state.placementPlus10[1] && this.state.plus10){
       this.setState({score:this.state.score+10, plus10:false, plus10mustDisapear:false, plus10onExtremity:false})
       Animated.timing(this.state.opacityPlus10,{toValue: 1,duration: 0,}).start(()=> {
         Animated.timing(this.state.opacityPlus10,{toValue: 0,duration: 800,}).start()
@@ -224,11 +224,11 @@ class PlayComponent extends Component {
       for (j=0; j<numberSquares;j++) {
         let random = Math.random()
         line.push(
-          <ImageChooserBear line={j} column={i} key={[i,j]} pick={this.pick}
+          <ImageChooserpinguin line={j} column={i} key={[i,j]} pick={this.pick}
           backgroundImage={this.backgroundImage(i,j)}
           isDisplayed={this.isInIcebergsPosition(i,j)?true:false}
           dimension={Constantes.screenWidth/numberSquares}>
-          </ImageChooserBear>)
+          </ImageChooserpinguin>)
       }
       column.push(<View style={{flexDirection:"row", height:Constantes.screenWidth/numberSquares}} key={i}>{line}</View>)
     }
@@ -245,7 +245,7 @@ class PlayComponent extends Component {
     console.log("loose")
     this.stopTimer()
     this.setState({
-      backgroundImageBear : require("../assets/images/bear/bearDied.png"),
+      backgroundImagepinguin : require("../assets/images/pinguin/pinguinDied.png"),
       lost:true,
       icebergsPosition:[
         [-1,-1],
@@ -284,17 +284,17 @@ class PlayComponent extends Component {
 
   newGame = () => {
     myVar = setInterval(() => this.getTimerValue(), this.state.timeIceDisapear)
-    Animated.timing(this.state.bearPositionDynamicI,{toValue: Constantes.screenWidth/numberSquares*(1/2+0)-25,duration: 50}).start();
-    Animated.timing(this.state.bearPositionDynamicJ,{toValue: Constantes.screenWidth/numberSquares*(1/2+0)-25,duration: 50}).start();
+    Animated.timing(this.state.pinguinPositionDynamicI,{toValue: Constantes.screenWidth/numberSquares*(1/2+0)-25,duration: 50}).start();
+    Animated.timing(this.state.pinguinPositionDynamicJ,{toValue: Constantes.screenWidth/numberSquares*(1/2+0)-25,duration: 50}).start();
     this.setState({
-      backgroundImageBear : require("../assets/images/bear/bearRight.png"),
+      backgroundImagepinguin : require("../assets/images/pinguin/pinguinRight.png"),
       icebergsPosition:[
         [0,0],
         [0,0],
         [0,0],
         [0,0]
       ],
-      bearPosition:[0,0],
+      pinguinPosition:[0,0],
       numberOfIce : 4,
       timeIceDisapear : 1000,
       lost:false,
@@ -302,45 +302,45 @@ class PlayComponent extends Component {
     });
   }
 
-  moveBear = (direction) => {
+  movepinguin = (direction) => {
     if(this.state.lost){
       return
     }
-    let bearPosition = this.state.bearPosition
+    let pinguinPosition = this.state.pinguinPosition
     if(direction === "up"){
-      this.setState({backgroundImageBear : require("../assets/images/bear/bearUp.png"),})
-      bearPosition[0] = bearPosition[0]-1;
-      Animated.timing(this.state.bearPositionDynamicI,{toValue: Constantes.screenWidth/numberSquares*(1/2+bearPosition[0])-25,duration: 200}).start();
+      this.setState({backgroundImagepinguin : require("../assets/images/pinguin/pinguinUp.png"),})
+      pinguinPosition[0] = pinguinPosition[0]-1;
+      Animated.timing(this.state.pinguinPositionDynamicI,{toValue: Constantes.screenWidth/numberSquares*(1/2+pinguinPosition[0])-25,duration: 200}).start();
     }
     if(direction === "down"){
-      this.setState({backgroundImageBear : require("../assets/images/bear/bearDown.png"),})
-      bearPosition[0] = bearPosition[0]+1;
-      Animated.timing(this.state.bearPositionDynamicI,{toValue: Constantes.screenWidth/numberSquares*(1/2+bearPosition[0])-25,duration: 200}).start();
+      this.setState({backgroundImagepinguin : require("../assets/images/pinguin/pinguinDown.png"),})
+      pinguinPosition[0] = pinguinPosition[0]+1;
+      Animated.timing(this.state.pinguinPositionDynamicI,{toValue: Constantes.screenWidth/numberSquares*(1/2+pinguinPosition[0])-25,duration: 200}).start();
     }
     if(direction === "right"){
-      this.setState({backgroundImageBear : require("../assets/images/bear/bearLeft.png"),})
-      bearPosition[1] = bearPosition[1]-1;
-      Animated.timing(this.state.bearPositionDynamicJ,{toValue: Constantes.screenWidth/numberSquares*(1/2+bearPosition[1])-25,duration: 200}).start();
+      this.setState({backgroundImagepinguin : require("../assets/images/pinguin/pinguinLeft.png"),})
+      pinguinPosition[1] = pinguinPosition[1]-1;
+      Animated.timing(this.state.pinguinPositionDynamicJ,{toValue: Constantes.screenWidth/numberSquares*(1/2+pinguinPosition[1])-25,duration: 200}).start();
     }
     if(direction === "left"){
-      this.setState({backgroundImageBear : require("../assets/images/bear/bearRight.png"),})
-      bearPosition[1] = bearPosition[1]+1;
-      Animated.timing(this.state.bearPositionDynamicJ,{toValue: Constantes.screenWidth/numberSquares*(1/2+bearPosition[1])-25,duration: 200}).start();
+      this.setState({backgroundImagepinguin : require("../assets/images/pinguin/pinguinRight.png"),})
+      pinguinPosition[1] = pinguinPosition[1]+1;
+      Animated.timing(this.state.pinguinPositionDynamicJ,{toValue: Constantes.screenWidth/numberSquares*(1/2+pinguinPosition[1])-25,duration: 200}).start();
     }
     /*
-    this.state.widthBear.interpolate({
+    this.state.widthpinguin.interpolate({
         inputRange: [0, 0.5, 1],
         outputRange: [50, 300, 400],
         extrapolate: 'clamp'
     })
     */
-    Animated.timing(this.state.widthBear,{toValue: 90,duration: 100}).start(() => {
-      Animated.timing(this.state.widthBear,{toValue: 50,duration: 100}).start()
+    Animated.timing(this.state.widthpinguin,{toValue: 90,duration: 100}).start(() => {
+      Animated.timing(this.state.widthpinguin,{toValue: 50,duration: 100}).start()
     });
 
     let isOnIce = false
     for(k=0; k<this.state.icebergsPosition.length;k++){
-      if(this.state.icebergsPosition[k][0] === bearPosition[0] && this.state.icebergsPosition[k][1] === bearPosition[1]){
+      if(this.state.icebergsPosition[k][0] === pinguinPosition[0] && this.state.icebergsPosition[k][1] === pinguinPosition[1]){
         isOnIce = true
       }
     }
@@ -350,21 +350,21 @@ class PlayComponent extends Component {
       if(this.state.plus10){
         this.winPlus10()
       }
-      this.setState({bearPosition : bearPosition})
+      this.setState({pinguinPosition : pinguinPosition})
     }
   }
 
   onSwipeUp = () => {
-    this.moveBear("up")
+    this.movepinguin("up")
   }
   onSwipeDown = () => {
-    this.moveBear("down")
+    this.movepinguin("down")
   }
   onSwipeLeft = () => {
-    this.moveBear("left")
+    this.movepinguin("left")
   }
   onSwipeRight = () => {
-    this.moveBear("right")
+    this.movepinguin("right")
   }
 
 
@@ -404,10 +404,10 @@ class PlayComponent extends Component {
           {!this.state.lost &&
             <GestureRecognizer
               onSwipe={this.onSwipe}
-              onSwipeUp={()=>this.moveBear("up")}
-              onSwipeDown={()=>this.moveBear("down")}
-              onSwipeLeft={()=>this.moveBear("right")}
-              onSwipeRight={()=>this.moveBear("left")}
+              onSwipeUp={()=>this.movepinguin("up")}
+              onSwipeDown={()=>this.movepinguin("down")}
+              onSwipeLeft={()=>this.movepinguin("right")}
+              onSwipeRight={()=>this.movepinguin("left")}
               config={config}
               style={{flex: 1,position:"absolute",top:0, left:0, zIndex:10,  height:"100%", width:"100%"}}
               >
@@ -422,9 +422,9 @@ class PlayComponent extends Component {
             </Animated.Text>
           </Animated.View>
 
-          <Animated.Image style={{height:this.state.widthBear, width:this.state.widthBear, position:"absolute",
-          top:this.state.bearPositionDynamicI,
-          left:this.state.bearPositionDynamicJ}} source={this.state.backgroundImageBear}/>
+          <Animated.Image style={{height:this.state.widthpinguin, width:this.state.widthpinguin, position:"absolute",
+          top:this.state.pinguinPositionDynamicI,
+          left:this.state.pinguinPositionDynamicJ}} source={this.state.backgroundImagepinguin}/>
 
           {this.state.plus10 &&
             <Image style={{height:50, width:50, position:"absolute",
@@ -444,26 +444,26 @@ class PlayComponent extends Component {
           <View style={{ flexDirection: 'column', width:"100%", flex:1, alignItems:"center", justifyContent:"center"}}>
             <View style={{ flexDirection: 'row', width:"100%", height:210, alignItems:"center", justifyContent:"space-between"}}>
               <View style={{flex:1, flexDirection: 'column', height:"50%"}}>
-                <TouchableOpacity onPress={() => this.moveBear("right")} style={{flexDirection: 'row', alignItems:"center", justifyContent:"center", borderWidth:0, backgroundColor:"rgba(255,255,255,0.5)", height:"100%", margin:1, borderColor:"rgba(200,200,200,1)"}}>
+                <TouchableOpacity onPress={() => this.movepinguin("right")} style={{flexDirection: 'row', alignItems:"center", justifyContent:"center", borderWidth:0, backgroundColor:"rgba(255,255,255,0.5)", height:"100%", margin:1, borderColor:"rgba(200,200,200,1)"}}>
                   <View>
                     <Image style={{height:70, width:70, marginRight:20, borderRadius:35}} source={require("../assets/images/left.png")}/>
                   </View>
                 </TouchableOpacity>
               </View>
               <View style={{flex:1, flexDirection: 'column', alignItems:"center", justifyContent:"center", height:"100%"}}>
-                <TouchableOpacity onPress={() => this.moveBear("up")} style={{flex:1, width:"100%", flexDirection: 'row', alignItems:"center", justifyContent:"center", borderWidth:0, backgroundColor:"rgba(255,255,255,0.5)", margin:1, borderColor:"rgba(200,200,200,1)"}}>
+                <TouchableOpacity onPress={() => this.movepinguin("up")} style={{flex:1, width:"100%", flexDirection: 'row', alignItems:"center", justifyContent:"center", borderWidth:0, backgroundColor:"rgba(255,255,255,0.5)", margin:1, borderColor:"rgba(200,200,200,1)"}}>
                   <View>
                     <Image style={{height:70, width:70, borderRadius:35}} source={require("../assets/images/up.png")}/>
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => this.moveBear("down")} style={{flex:1, width:"100%",  flexDirection: 'row', alignItems:"center", justifyContent:"center", borderWidth:0, backgroundColor:"rgba(255,255,255,0.5)", margin:1, borderColor:"rgba(200,200,200,1)"}}>
+                <TouchableOpacity onPress={() => this.movepinguin("down")} style={{flex:1, width:"100%",  flexDirection: 'row', alignItems:"center", justifyContent:"center", borderWidth:0, backgroundColor:"rgba(255,255,255,0.5)", margin:1, borderColor:"rgba(200,200,200,1)"}}>
                   <View>
                     <Image style={{height:70, width:70, borderRadius:35}} source={require("../assets/images/down.png")}/>
                   </View>
                 </TouchableOpacity>
               </View>
               <View style={{flex:1, flexDirection: 'column', height:"50%"}}>
-                <TouchableOpacity onPress={() => this.moveBear("left")} style={{flexDirection: 'row', alignItems:"center", justifyContent:"center", borderWidth:0, backgroundColor:"rgba(255,255,255,0.5)", height:"100%", margin:1, borderColor:"rgba(200,200,200,1)"}}>
+                <TouchableOpacity onPress={() => this.movepinguin("left")} style={{flexDirection: 'row', alignItems:"center", justifyContent:"center", borderWidth:0, backgroundColor:"rgba(255,255,255,0.5)", height:"100%", margin:1, borderColor:"rgba(200,200,200,1)"}}>
                   <View>
                     <Image style={{height:70, width:70, marginLeft:20, borderRadius:35}} source={require("../assets/images/right.png")}/>
                   </View>
@@ -475,14 +475,14 @@ class PlayComponent extends Component {
 
         {this.state.lost ?
           <View style={{width:"100%", height:200, position:"absolute", right:0, bottom:0}}>
-            <Image style={{height:"100%", width:"100%"}} source={Constantes.imagesBear[Math.floor(Math.random()*Constantes.imagesBear.length)]}/>
+            <Image style={{height:"100%", width:"100%"}} source={Constantes.imagespinguin[Math.floor(Math.random()*Constantes.imagespinguin.length)]}/>
           </View>
           :
           null
         }
         {this.state.lost ?
           <View style={{ position:"absolute", right:20, bottom:150, borderRadius:5, borderWidth:1, backgroundColor:"rgba(255,255,255,0.7)", flexDirection:"row", textAlign:"center", alignItems:"center", padding:5, maxWidth:250}}>
-            <Text style={{fontSize:15}}>{Constantes.textBear[Math.floor(Math.random()*Constantes.textBear.length)]}</Text>
+            <Text style={{fontSize:15}}>{Constantes.textpinguin[Math.floor(Math.random()*Constantes.textpinguin.length)]}</Text>
           </View>
           :
           null

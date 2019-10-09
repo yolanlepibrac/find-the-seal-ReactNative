@@ -39,6 +39,14 @@ export default {
     require("../assets/images/seal/5.png"),
   ],
 
+  imagesBear : [
+    require("../assets/images/bear/1.png"),
+    require("../assets/images/bear/2.png"),
+    require("../assets/images/bear/3.png"),
+    require("../assets/images/bear/4.png"),
+    require("../assets/images/bear/5.png"),
+  ],
+
   textSeal : [
     "Guy, you sucks ...",
     "I never seen someone as bad.",
@@ -52,6 +60,22 @@ export default {
     "Crap, you play like a shit",
     "Forget this game, not for you",
     "You will never win this game, sorry"
+
+  ],
+
+  textBear : [
+    "Fucking looser",
+    "You are the worst player I ever seen",
+    "Polar bear will die because of you",
+    "I'm not joking, stop to ridicule yoursekf",
+    "finally, you'r not so bad, in an other life",
+    "Antartic will totally melt before you win this game",
+    "If I catch you again to play as badly, I will kill you",
+    "Hopefully, you can't be ugly as the score you did",
+    "My brother is 2 year old, but better than you",
+    "One polar bear less, since I will kill myself to not see you play again",
+    "Fortunately, I will never cross you in real life",
+    "Water wets, fire burn, and you loose"
 
   ],
 

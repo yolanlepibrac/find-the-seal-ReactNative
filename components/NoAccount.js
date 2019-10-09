@@ -162,6 +162,9 @@ class NoAccountComponent extends React.Component {
   continueWithoutAccount = () => {
     this.setState({displayLoading:true})
     this.props.changeAccountState({userName:"unknow", email:"unknow", imagaProfil:undefined, connected:false, id:'_' + Math.random().toString(36).substr(2, 9),});
+    this.props.navigation.navigate("Home")
+    this.setState({displayLoading:false})
+    /*
     API.getBestScore().then((data)=> {
       console.log(data.data.bestScores)
       this.props.setBestScoreToRedux(data.data.bestScores, undefined)
@@ -171,6 +174,7 @@ class NoAccountComponent extends React.Component {
       console.log(error);
       this.setState({displayLoading:false})
     })
+    */
   }
 
   componentDidUpdate = (prevProps) => {

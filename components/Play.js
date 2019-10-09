@@ -279,7 +279,7 @@ class PlayComponent extends Component {
 
         {this.state.lost ?
           <View style={{width:"100%", height:200, position:"absolute", right:0, bottom:0}}>
-            <Image style={{height:"100%", width:"100%"}} source={Constantes.imagesSeal[Math.floor(Math.random()*5)]}/>
+            <Image style={{height:"100%", width:"100%"}} source={Constantes.imagesSeal[Math.floor(Math.random()*Constantes.imagesSeal.length)]}/>
           </View>
           :
           null
