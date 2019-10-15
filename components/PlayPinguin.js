@@ -4,15 +4,17 @@ import { StyleSheet, Text, View, ActivityIndicator, Button, TouchableOpacity, Di
 import { connect } from "react-redux";
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 
-import ImageChooserpinguin from "./ImageChooserpinguin"
+import ImageChooserpinguin from "./ImageChooserPinguin";
+import ImageChooserIce from "./ImageChooserIce";
+import IceCubeLine from "./IceCubeLine";
+
 import { changeAccountState } from "../redux/actions/index";
 import { setBestScoreToRedux } from "../redux/actions/index";
 import { setBestScore } from "../redux/actions/index";
 import Constantes from "../utils/Constantes";
 import API from "../utils/API";
 
-const numberSquares = 6;
-
+const sizeIce = Constantes.screenWidth/Constantes.numberPinguin
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -22,245 +24,254 @@ function mapDispatchToProps(dispatch) {
   };
 };
 
-
-
 class PlayComponent extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      icebergsPosition:[
-        [0,0],
-        [0,0],
-        [0,0],
-        [0,0]
-      ],
-      numberOfIce : 4,
-      timeIceDisapear : 1000,
-      pinguinPositionDynamicI: new Animated.Value(Constantes.screenWidth/numberSquares*(1/2+0)-25),
-      pinguinPositionDynamicJ: new Animated.Value(Constantes.screenWidth/numberSquares*(1/2+0)-25),
-      pinguinPosition:[0,0],
+      pinguinsOffset : new Animated.Value(0),
+      iceOffset : new Animated.Value(0),
+      iceOffsetEntiere:0,
       score:0,
-      opacityPlus10: new Animated.Value(0),
-      sizePlus10: new Animated.Value(100),
-      positionPlus10 : new Animated.Value(Constantes.screenWidth/numberSquares*(numberSquares/2)),
-      fontSizePlus10 : new Animated.Value(50),
-      plus10 : false,
-      placementPlus10 : [0,0],
-      backgroundImagepinguin : require("../assets/images/pinguin/pinguinRight.png"),
-      widthpinguin : new Animated.Value(50),
+      imagesPinguin : Constantes.imagesPinguin[Math.floor(Math.random()*Constantes.imagesPinguin.length)],
+      textPinguin : Constantes.textPinguin[Math.floor(Math.random()*Constantes.textPinguin.length)],
+      probaIce: 0.9,
+      durationRound : 15000,
+      pinguinsPosition:[
+        [2,2],[2,3],[2,4],[2,5],[2,6],[2,7],[2,8],
+        [3,2],[3,3],[3,4],[3,5],[3,6],[3,7],[3,8],
+        [4,2],[4,3],[4,4],[4,5],[4,6],[4,7],[4,8],
+        [5,2],[5,3],[5,4],[5,5],[5,6],[5,7],[5,8],
+        [6,2],[6,3],[6,4],[6,5],[6,6],[6,7],[6,8],
+        [7,2],[7,3],[7,4],[7,5],[7,6],[7,7],[7,8],
+      ],
+      icebergsPosition:[
+        {ices:[false,true,true,true,true,true,true,true,true,false], position:0, opacity:new Animated.Value(1)},
+        {ices:[false,true,true,true,true,true,true,true,true,false], position:1, opacity:new Animated.Value(1)},
+        {ices:[false,true,true,true,true,true,true,true,true,false], position:2, opacity:new Animated.Value(1)},
+        {ices:[false,true,true,true,true,true,true,true,true,false], position:3, opacity:new Animated.Value(1)},
+        {ices:[false,true,true,true,true,true,true,true,true,false], position:4, opacity:new Animated.Value(1)},
+        {ices:[false,true,true,true,true,true,true,true,true,false], position:5, opacity:new Animated.Value(1)},
+        {ices:[false,true,true,true,true,true,true,true,true,false], position:6, opacity:new Animated.Value(1)},
+        {ices:[false,true,true,true,true,true,true,true,true,false], position:7, opacity:new Animated.Value(1)},
+        {ices:[false,true,true,true,true,true,true,true,true,false], position:8, opacity:new Animated.Value(1)},
+        {ices:[false,true,true,true,true,true,true,true,true,false], position:9, opacity:new Animated.Value(1)},
+      ],
+      needUpdate:false,
+
     };
   }
 
-  componentDidMount = () => {
-    myVar = setInterval(() => this.getTimerValue(), this.state.timeIceDisapear)
-  }
-
   componentWillUnmount = () => {
-    clearInterval(myVar);
+    this.endGame()
+   }
+
+  endGame = () => {
+    clearInterval(animatePinguin);
+    clearInterval(moveIceUp);
+    clearInterval(killPinguins);
+    Animated.timing(
+      this.state.pinguinsOffset
+    ).stop()
+    Animated.timing(
+      this.state.iceOffset
+    ).stop()
+  }
+
+  componentDidMount = () => {
+    this.beginGame()
+  }
+
+  beginGame = () => {
+    this.animatePinguin()
+    animatePinguin = setInterval(() => this.animatePinguin(), this.state.durationRound);
+    this.animateIce()
+    animateIce = setInterval(() => this.animateIce(), this.state.durationRound);
+    moveIceUp = setInterval(() => this.moveIceUp(), this.state.durationRound/Constantes.numberPinguin);
+    killPinguins = setInterval(() => this.killPinguinsWhenNewIce(), this.state.durationRound/Constantes.numberPinguin);
+
   }
 
 
+   moveIceUp = () => {
+     let icebergsPosition = this.state.icebergsPosition;
+     for (var i = 0; i < icebergsPosition.length; i++) {
+       let index=i;
+       if((icebergsPosition[i].position*Constantes.screenWidth/Constantes.numberPinguin-2)+this.state.iceOffset.__getValue()>=Constantes.screenWidth){
+         icebergsPosition[i].ices[0] = false
+         icebergsPosition[i].ices[icebergsPosition[i].ices.length-1] = false
+         for (var j = 1; j < icebergsPosition[i].ices.length-1; j++) {
+           icebergsPosition[i].ices[j] = Math.random()<this.state.probaIce?true:false
+         }
+         //console.log(icebergsPosition[i].position-this.state.icebergsPosition.length)
+         icebergsPosition[i].position = icebergsPosition[i].position-this.state.icebergsPosition.length
+
+       }else if((icebergsPosition[i].position*Constantes.screenWidth/Constantes.numberPinguin-1)+this.state.iceOffset.__getValue()>=Constantes.screenWidth-Constantes.screenWidth/Constantes.numberPinguin){
+         this.iceDisapear(this.state.icebergsPosition[i].opacity)
+       }
+     }
+     this.setState({icebergsPosition : icebergsPosition, needUpdate:!this.state.needUpdate})
+   }
+
+   iceDisapear = (ice) => {
+     Animated.timing(ice , {
+       toValue:0,
+       duration: this.state.durationRound/Constantes.numberPinguin,
+       easing:(t) => t
+     }).start(()=> {
+         Animated.timing(ice , {
+           toValue:1,
+           duration: 0,
+           delay: this.state.durationRound/Constantes.numberPinguin,
+           easing:(t) => t
+         }).start();
+      });
+   }
+
+   animatePinguin = () => {
+       Animated.timing(this.state.pinguinsOffset , {
+         toValue:this.state.pinguinsOffset.__getValue()+Constantes.screenWidth,
+         duration: this.state.durationRound,
+         easing:(t) => t
+       }).start();
+
+   }
+
+   animateIce = () => {
+       Animated.timing(this.state.iceOffset , {
+         toValue:this.state.iceOffset.__getValue()+Constantes.screenWidth,
+         duration: this.state.durationRound,
+         easing:(t) => t
+       }).start();
+       this.setState({iceOffsetEntiere:this.state.iceOffsetEntiere+Constantes.screenWidth})
+   }
 
 
-  getTimerValue2 = () => {
-    var timePassed = new Date().getTime() - this.state.beginning;
-    var secondPassed = Math.floor((timePassed % (1000 * 60)) / 1000)
-    var milliSecondPassed = Math.floor((timePassed % (1000))/10)
-    secondPassed = secondPassed+this.state.numberTap
-    if(secondPassed>59){
+
+
+
+  killPinguinsWhenNewIce = () => {
+    let pinguinsPosition = this.state.pinguinsPosition;
+    let score = this.state.score
+    for (var i = pinguinsPosition.length-1; i >= 0 ; i--) {
+      if(pinguinsPosition[i][1]*sizeIce + this.state.pinguinsOffset.__getValue()  > Constantes.screenWidth){
+        pinguinsPosition.splice(i, 1);
+        score = score - 1
+      }else if(pinguinsPosition[i][1]*Constantes.screenWidth/Constantes.numberPinguin + this.state.pinguinsOffset.__getValue() < sizeIce){
+        pinguinsPosition.splice(i, 1);
+        score = score - 1
+      }else if(pinguinsPosition[i][0]*Constantes.screenWidth/Constantes.numberPinguin >= Constantes.screenWidth-sizeIce){
+        pinguinsPosition.splice(i, 1);
+        score = score - 1
+      }else if(pinguinsPosition[i][0]*Constantes.screenWidth/Constantes.numberPinguin < sizeIce){
+        pinguinsPosition.splice(i, 1);
+        score = score - 1
+      }
+    }
+    this.setState({pinguinsPosition:pinguinsPosition, score:score})
+    if(pinguinsPosition.length===0){
       this.loose()
-    }else{
-      this.setState({
-        secondPassed : secondPassed.toString() + "." + milliSecondPassed.toString()
-      })
     }
   }
 
-  getTimerValue = () => {
-    let icebergsPosition = this.state.icebergsPosition
-
-    let newIcePosition = this.newIcePosition(icebergsPosition)
-    this.plus10()
-    icebergsPosition.shift()
-    icebergsPosition.push(newIcePosition)
-
-    let isOnIce = false
-    for(k=0; k<icebergsPosition.length;k++){
-      if(icebergsPosition[k][0] === this.state.pinguinPosition[0] && icebergsPosition[k][1] === this.state.pinguinPosition[1]){
-        isOnIce = true
+  killPinguinsWhenMovePinguin = (direction) => {
+    let offsetUp = 0;
+    let offsetSide = 0;
+    if(direction==="up"){offsetUp = 1}
+    if(direction==="down"){offsetUp = -1}
+    if(direction==="right"){offsetSide = -1}
+    if(direction==="left"){offsetSide = 1}
+    let pinguinsPosition = this.state.pinguinsPosition;
+    let icebergsPosition = this.state.icebergsPosition;
+    let score = this.state.score
+    let topIcePosition = 0;
+    let topLineIndex = 0;
+    let iceLineIndex = [];
+    for (var i = 0; i < icebergsPosition.length; i++) {
+      if(icebergsPosition[i].position<topIcePosition){
+        topIcePosition = icebergsPosition[i].position;
+        topLineIndex = i
       }
     }
-    if(!isOnIce){
-      this.loose()
-    }else{
-      this.setState({
-        icebergsPosition : icebergsPosition,
-        timeIceDisapear : this.state.timeIceDisapear>500?this.state.timeIceDisapear-5:this.state.timeIceDisapear>300?this.state.timeIceDisapear-1:this.state.timeIceDisapear,
-        score:this.state.score+1,
-      })
+    for (var i = topLineIndex; i < icebergsPosition.length; i++) {
+      iceLineIndex.push(i)
     }
-  }
+    for (var i = 0; i < topLineIndex; i++) {
+      iceLineIndex.push(i)
+    }
+  //  console.log(iceLineIndex)
 
-  plus10 = () => {
-    if(this.state.plus10mustDisapear){
-      this.setState({plus10:false, plus10mustDisapear:false})
-    }
-    if(this.state.plus10 && this.state.icebergsPosition[0][0] === this.state.placementPlus10[0] && this.state.icebergsPosition[0][1] === this.state.placementPlus10[1]){
-      this.setState({plus10onExtremity:false, plus10mustDisapear:true})
-    }
-    if(this.state.plus10onExtremity){
-      this.setState({plus10:true})
-    }
-    if(this.state.icebergsPosition[1][0] === this.state.icebergsPosition[3][0] && this.state.icebergsPosition[1][1] === this.state.icebergsPosition[3][1] && (this.state.icebergsPosition[3][0]!==0 && this.state.icebergsPosition[3][1]!==0)){
-      this.setState({plus10onExtremity:true, placementPlus10:[this.state.icebergsPosition[3][0], this.state.icebergsPosition[3][1]]})
-      console.log([this.state.icebergsPosition[3][0], this.state.icebergsPosition[3][1]])
-    }else if(Math.random()*100<5){
-      this.setState({plus10:true, placementPlus10:[this.state.icebergsPosition[3][0], this.state.icebergsPosition[3][1]]})
-    }
-    this.winPlus10()
-  }
-
-  winPlus10 = () => {
-    if(this.state.pinguinPosition[0] === this.state.placementPlus10[0] && this.state.pinguinPosition[1] === this.state.placementPlus10[1] && this.state.plus10){
-      this.setState({score:this.state.score+10, plus10:false, plus10mustDisapear:false, plus10onExtremity:false})
-      Animated.timing(this.state.opacityPlus10,{toValue: 1,duration: 0,}).start(()=> {
-        Animated.timing(this.state.opacityPlus10,{toValue: 0,duration: 800,}).start()
-      });
-      Animated.timing(this.state.sizePlus10,{toValue: 400, duration: 0,}).start(()=> {
-        Animated.timing(this.state.sizePlus10,{toValue: 100, duration: 800,}).start()
-      });
-      Animated.timing(this.state.positionPlus10,{toValue: Constantes.screenWidth/numberSquares*(numberSquares/2)-400/2, duration: 0,}).start(()=> {
-        Animated.timing(this.state.positionPlus10,{toValue: Constantes.screenWidth/numberSquares*(numberSquares/2), duration: 800,}).start()
-      });
-      Animated.timing(this.state.fontSizePlus10,{toValue:200, duration: 0,}).start(()=> {
-        Animated.timing(this.state.fontSizePlus10,{toValue: 50, duration: 800,}).start()
-      });
-      this.setState({plus10:false})
-    }
-  }
-
-
-  newIcePosition = (icebergsPosition) => {
-    let oldI = icebergsPosition[this.state.numberOfIce-1][0]
-    let oldJ = icebergsPosition[this.state.numberOfIce-1][1]
-    let oldIMoinsUn = icebergsPosition[this.state.numberOfIce-2][0]
-    let oldJMoinsUn = icebergsPosition[this.state.numberOfIce-2][1]
-    let oldIMoinsDeux = icebergsPosition[this.state.numberOfIce-3][0]
-    let oldJMoinsDeux = icebergsPosition[this.state.numberOfIce-3][1]
-    let newI;
-    let newJ;
-    let directionColumn = Math.random()>0.5?true:false;
-    if(directionColumn){
-      let directionSecondaryDown = Math.random()>0.5?true:false;
-      if(oldI > oldIMoinsUn || (oldI === oldIMoinsUn && oldIMoinsUn > oldIMoinsDeux)){
-        directionSecondaryDown = true
-      }else if(oldI < oldIMoinsUn || (oldI === oldIMoinsUn && oldIMoinsUn < oldIMoinsDeux)){
-        directionSecondaryDown = false
-      }
-      if(oldI === 0){directionSecondaryDown = true}
-      if(oldI === numberSquares-1){directionSecondaryDown = false}
-      if(directionSecondaryDown){
-        newI = oldI + 1;
-        newJ = oldJ;
+    for (var i = pinguinsPosition.length-1; i >= 0 ; i--) {
+      let columnPinguin = pinguinsPosition[i][1]
+      let linePinguin = pinguinsPosition[i][0]
+      if(columnPinguin <= -1){
+        //console.log(columnPinguin)
+        //pinguinsPosition.splice(i, 1);
+        score = score - 1
       }else{
-        newI = oldI - 1;
-        newJ = oldJ;
-      }
-
-    }else{
-      let directionSecondaryRight = Math.random()>0.5?true:false;
-      if(oldJ > oldJMoinsUn || (oldJ === oldJMoinsUn && oldJMoinsUn > oldJMoinsDeux)){
-        directionSecondaryRight = true
-      }else if(oldJ < oldJMoinsUn || (oldJ === oldJMoinsUn && oldJMoinsUn < oldJMoinsDeux)){
-        directionSecondaryRight = false
-      }
-      if(oldJ === 0){directionSecondaryRight = true}
-      if(oldJ === numberSquares-1){directionSecondaryRight = false}
-      if(directionSecondaryRight){
-        newI = oldI;
-        newJ = oldJ + 1;
-      }else{
-        newI = oldI;
-        newJ = oldJ - 1;
-      }
-    }
-
-    return [newI, newJ]
-  }
-
-  isInIcebergsPosition = (i,j) => {
-    for(k=0; k<this.state.icebergsPosition.length;k++){
-      if(this.state.icebergsPosition[k][0] === i && this.state.icebergsPosition[k][1] === j){
-        return true
-      }
-    }
-    return false
-
-
-  }
-
-
-
-
-  backgroundImage = (i,j) => {
-
-      if(this.state.randomImages === undefined){
-        return require("../assets/images/ice/0.png")
-      }else{
-        let randomImage = this.state.randomImages[i][j]
-        if(randomImage<Constantes.imagesIce.length && randomImage<this.state.numberOfShape-1){
-          return Constantes.imagesIce[randomImage]
-        }else{
-          return require("../assets/images/ice/0.png")
+        //console.log(columnPinguin)
+        //console.log(iceLineIndex[columnPinguin])
+        if(icebergsPosition[iceLineIndex[columnPinguin]].ices[linePinguin] === false){
+          //console.log(icebergsPosition[iceLineIndex[columnPinguin]].ices)
+          //console.log(linePinguin)
+          //console.log(i)
+          //pinguinsPosition.splice(i, 1);
+          score = score - 1
         }
       }
-  }
 
-  displayImageChooser = () => {
-    const column = []
-    for (i=0; i<numberSquares;i++) {
-      const line = []
-      for (j=0; j<numberSquares;j++) {
-        let random = Math.random()
-        line.push(
-          <ImageChooserpinguin line={j} column={i} key={[i,j]} pick={this.pick}
-          backgroundImage={this.backgroundImage(i,j)}
-          isDisplayed={this.isInIcebergsPosition(i,j)?true:false}
-          dimension={Constantes.screenWidth/numberSquares}>
-          </ImageChooserpinguin>)
-      }
-      column.push(<View style={{flexDirection:"row", height:Constantes.screenWidth/numberSquares}} key={i}>{line}</View>)
+
+      console.log(Math.round(this.state.pinguinsOffset.__getValue()+this.state.pinguinsPosition[i][1]*sizeIce))
     }
-    return <View style={{flexDirection:"column", width:Constantes.screenWidth, height:Constantes.screenWidth}}>{column}</View>
+    /*
+    for (var i = pinguinsPosition.length-1; i >= 0 ; i--) {
+      const positionPinguinInTable = pinguinsPosition[i][1];
+      const positionPinguinInIcebergTable = this.state.icebergsPosition.length-positionPinguinInTable;
+      if(positionPinguinInIcebergTable + offsetUp >= this.state.icebergsPosition.length){
+        pinguinsPosition.splice(i, 1);
+        score = score - 1
+      }else if(this.state.icebergsPosition[positionPinguinInIcebergTable + offsetUp].ices[pinguinsPosition[i][0] + offsetSide] !== true ){
+        pinguinsPosition.splice(i, 1);
+        score = score - 1
+      }
+    }
+    */
+    this.setState({pinguinsPosition:pinguinsPosition, score:score})
+    if(pinguinsPosition.length===0){
+      this.loose()
+    }
+
   }
 
+
+
+  displayPinguins = () => {
+    return (
+      <View style={{flexDirection:"column", width:Constantes.screenWidth, height:Constantes.screenWidth}}>
+        <Animated.View style={{flexDirection:"column", width:Constantes.screenWidth, height:Constantes.screenWidth, position:"absolute", top:this.state.pinguinsOffset, left:0}}>{this.state.pinguinsPosition.map((pinguin, i)=> {
+          return <ImageChooserpinguin
+          key={i}
+          top={this.state.pinguinsPosition[i][1]*Constantes.screenWidth/Constantes.numberPinguin}
+          left={this.state.pinguinsPosition[i][0]*Constantes.screenWidth/Constantes.numberPinguin}
+          position={this.state.pinguinsPosition}>
+          </ImageChooserpinguin>
+        })}
+        </Animated.View>
+      </View>)
+  }
 
 
   loose = () => {
+    if(this.state.loose){return;}
+    this.endGame()
 
-    if(this.state.loose){
-      return;
-    }
-    console.log("loose")
-    this.stopTimer()
     this.setState({
-      backgroundImagepinguin : require("../assets/images/pinguin/pinguinDied.png"),
+      score:0,
       lost:true,
-      icebergsPosition:[
-        [-1,-1],
-        [-1,-1],
-        [-1,-1],
-        [-1,-1],
-      ],
     })
     if(this.state.score > this.props.accountState.account.bestScore || this.props.accountState.account.bestScore===undefined){
       this.bestScore()
     }
-    this.setState({
-
-    })
-
   }
 
   bestScore = () => {
@@ -268,7 +279,7 @@ class PlayComponent extends Component {
     this.props.setBestScore(this.state.score)
     if(this.props.accountState.account.connected === true){
       API.setBestScore(this.state.score, this.props.accountState.account.id).then((data) => {
-        console.log(data.data.score)
+        //console.log(data.data.score)
         API.getBestScore(this.props.accountState.account.id).then((data)=> {
           this.props.setBestScoreToRedux(data.data.bestScores, data.data.index)
         })
@@ -278,80 +289,77 @@ class PlayComponent extends Component {
   }
 
 
-  stopTimer = () => {
-    clearInterval(myVar);
-  }
-
   newGame = () => {
-    myVar = setInterval(() => this.getTimerValue(), this.state.timeIceDisapear)
-    Animated.timing(this.state.pinguinPositionDynamicI,{toValue: Constantes.screenWidth/numberSquares*(1/2+0)-25,duration: 50}).start();
-    Animated.timing(this.state.pinguinPositionDynamicJ,{toValue: Constantes.screenWidth/numberSquares*(1/2+0)-25,duration: 50}).start();
+    this.beginGame()
     this.setState({
-      backgroundImagepinguin : require("../assets/images/pinguin/pinguinRight.png"),
-      icebergsPosition:[
-        [0,0],
-        [0,0],
-        [0,0],
-        [0,0]
+      pinguinsOffset : new Animated.Value(0),
+      iceOffset : new Animated.Value(0),
+      iceOffsetEntiere:0,
+      imagesPinguin : Constantes.imagesPinguin[Math.floor(Math.random()*Constantes.imagesPinguin.length)],
+      textPinguin : Constantes.textPinguin[Math.floor(Math.random()*Constantes.textPinguin.length)],
+      probaIce: 0.8,
+      durationRound : 15000,
+      pinguinsPosition:[
+        [2,2],[2,3],[2,4],[2,5],[2,6],[2,7],[2,8],
+        [3,2],[3,3],[3,4],[3,5],[3,6],[3,7],[3,8],
+        [4,2],[4,3],[4,4],[4,5],[4,6],[4,7],[4,8],
+        [5,2],[5,3],[5,4],[5,5],[5,6],[5,7],[5,8],
+        [6,2],[6,3],[6,4],[6,5],[6,6],[6,7],[6,8],
+        [7,2],[7,3],[7,4],[7,5],[7,6],[7,7],[7,8],
       ],
-      pinguinPosition:[0,0],
-      numberOfIce : 4,
-      timeIceDisapear : 1000,
+      icebergsPosition:[
+        {ices:[false,true,true,true,true,true,true,true,true,false], position:0, opacity:new Animated.Value(1)},
+        {ices:[false,true,true,true,true,true,true,true,true,false], position:1, opacity:new Animated.Value(1)},
+        {ices:[false,true,true,true,true,true,true,true,true,false], position:2, opacity:new Animated.Value(1)},
+        {ices:[false,true,true,true,true,true,true,true,true,false], position:3, opacity:new Animated.Value(1)},
+        {ices:[false,true,true,true,true,true,true,true,true,false], position:4, opacity:new Animated.Value(1)},
+        {ices:[false,true,true,true,true,true,true,true,true,false], position:5, opacity:new Animated.Value(1)},
+        {ices:[false,true,true,true,true,true,true,true,true,false], position:6, opacity:new Animated.Value(1)},
+        {ices:[false,true,true,true,true,true,true,true,true,false], position:7, opacity:new Animated.Value(1)},
+        {ices:[false,true,true,true,true,true,true,true,true,false], position:8, opacity:new Animated.Value(1)},
+        {ices:[false,true,true,true,true,true,true,true,true,false], position:9, opacity:new Animated.Value(1)},
+      ],
+      needUpdate:false,
+
       lost:false,
       score:0,
     });
+
   }
 
   movepinguin = (direction) => {
-    if(this.state.lost){
-      return
-    }
-    let pinguinPosition = this.state.pinguinPosition
+    if(this.state.lost){return}
+    let pinguinsPosition = this.state.pinguinsPosition;
+    let score = this.state.score
     if(direction === "up"){
-      this.setState({backgroundImagepinguin : require("../assets/images/pinguin/pinguinUp.png"),})
-      pinguinPosition[0] = pinguinPosition[0]-1;
-      Animated.timing(this.state.pinguinPositionDynamicI,{toValue: Constantes.screenWidth/numberSquares*(1/2+pinguinPosition[0])-25,duration: 200}).start();
+      this.killPinguinsWhenMovePinguin("up")
+      for (var i = 0; i < this.state.pinguinsPosition.length; i++) {
+        pinguinsPosition[i][1] = pinguinsPosition[i][1] - 1;
+        score = score + 1
+      }
     }
     if(direction === "down"){
-      this.setState({backgroundImagepinguin : require("../assets/images/pinguin/pinguinDown.png"),})
-      pinguinPosition[0] = pinguinPosition[0]+1;
-      Animated.timing(this.state.pinguinPositionDynamicI,{toValue: Constantes.screenWidth/numberSquares*(1/2+pinguinPosition[0])-25,duration: 200}).start();
+      this.killPinguinsWhenMovePinguin("down")
+      for (var i = 0; i < this.state.pinguinsPosition.length; i++) {
+        pinguinsPosition[i][1] = pinguinsPosition[i][1] + 1;
+        score = score + 1
+      }
     }
     if(direction === "right"){
-      this.setState({backgroundImagepinguin : require("../assets/images/pinguin/pinguinLeft.png"),})
-      pinguinPosition[1] = pinguinPosition[1]-1;
-      Animated.timing(this.state.pinguinPositionDynamicJ,{toValue: Constantes.screenWidth/numberSquares*(1/2+pinguinPosition[1])-25,duration: 200}).start();
+      this.killPinguinsWhenMovePinguin("right")
+      for (var i = 0; i < this.state.pinguinsPosition.length; i++) {
+        pinguinsPosition[i][0] = pinguinsPosition[i][0] - 1;
+        score = score + 1
+      }
     }
     if(direction === "left"){
-      this.setState({backgroundImagepinguin : require("../assets/images/pinguin/pinguinRight.png"),})
-      pinguinPosition[1] = pinguinPosition[1]+1;
-      Animated.timing(this.state.pinguinPositionDynamicJ,{toValue: Constantes.screenWidth/numberSquares*(1/2+pinguinPosition[1])-25,duration: 200}).start();
-    }
-    /*
-    this.state.widthpinguin.interpolate({
-        inputRange: [0, 0.5, 1],
-        outputRange: [50, 300, 400],
-        extrapolate: 'clamp'
-    })
-    */
-    Animated.timing(this.state.widthpinguin,{toValue: 90,duration: 100}).start(() => {
-      Animated.timing(this.state.widthpinguin,{toValue: 50,duration: 100}).start()
-    });
-
-    let isOnIce = false
-    for(k=0; k<this.state.icebergsPosition.length;k++){
-      if(this.state.icebergsPosition[k][0] === pinguinPosition[0] && this.state.icebergsPosition[k][1] === pinguinPosition[1]){
-        isOnIce = true
+      this.killPinguinsWhenMovePinguin("left")
+      for (var i = 0; i < this.state.pinguinsPosition.length; i++) {
+        pinguinsPosition[i][0] = pinguinsPosition[i][0] + 1;
+        score = score + 1
       }
     }
-    if(!isOnIce){
-      this.loose()
-    }else {
-      if(this.state.plus10){
-        this.winPlus10()
-      }
-      this.setState({pinguinPosition : pinguinPosition})
-    }
+    this.setState({pinguinsPosition:pinguinsPosition, score:score})
   }
 
   onSwipeUp = () => {
@@ -379,6 +387,7 @@ class PlayComponent extends Component {
       directionalOffsetThreshold: 80,
       gestureIsClickThreshold:10
     };
+
 
 
 
@@ -413,26 +422,17 @@ class PlayComponent extends Component {
               >
               </GestureRecognizer>
           }
-          {this.displayImageChooser()}
-          <Animated.View style={{height:400, width:400, position:"absolute", opacity:this.state.opacityPlus10,
-          flexDirection:"row", justifyContent:"center", alignItems:"center", textAlign:"center",
-          bottom:this.state.positionPlus10,
-          right:this.state.positionPlus10}}>
-            <Animated.Text style={{fontSize:this.state.fontSizePlus10, color:"white", fontWeight:"bold"}}>+10
-            </Animated.Text>
+          <Animated.View style={{flexDirection:"column", position:"absolute", top:this.state.iceOffset, left:0}}>
+            {this.state.icebergsPosition.map((obj, index)=> {
+                return (
+                  <Animated.View key={index} style={{flexDirection:"column", position:"absolute", opacity:this.state.icebergsPosition[index].opacity, top:(this.state.icebergsPosition[index].position-1)*Constantes.screenWidth/Constantes.numberPinguin, left:0}}>
+                    <IceCubeLine  index={index} ices={this.state.icebergsPosition[index].ices} needUpdate={this.state.icebergsPosition[index].position}></IceCubeLine>
+                  </Animated.View>
+                )
+            })}
           </Animated.View>
-
-          <Animated.Image style={{height:this.state.widthpinguin, width:this.state.widthpinguin, position:"absolute",
-          top:this.state.pinguinPositionDynamicI,
-          left:this.state.pinguinPositionDynamicJ}} source={this.state.backgroundImagepinguin}/>
-
-          {this.state.plus10 &&
-            <Image style={{height:50, width:50, position:"absolute",
-            top:Constantes.screenWidth/numberSquares*(1/2+this.state.placementPlus10[0])-25,
-            left:Constantes.screenWidth/numberSquares*(1/2+this.state.placementPlus10[1])-25}} source={require("../assets/images/plus.png")}/>
-          }
+          {this.displayPinguins()}
         </View>
-
 
         {this.state.lost ?
           <View style={{flex:1, flexDirection: 'column', width:"100%", marginTop:20, alignItems:"center", justifyContent:"center"}}>
@@ -473,16 +473,17 @@ class PlayComponent extends Component {
           </View>
         }
 
+
         {this.state.lost ?
           <View style={{width:"100%", height:200, position:"absolute", right:0, bottom:0}}>
-            <Image style={{height:"100%", width:"100%"}} source={Constantes.imagespinguin[Math.floor(Math.random()*Constantes.imagespinguin.length)]}/>
+            <Image style={{height:"100%", width:"100%"}} source={this.state.imagesPinguin}/>
           </View>
           :
           null
         }
         {this.state.lost ?
           <View style={{ position:"absolute", right:20, bottom:150, borderRadius:5, borderWidth:1, backgroundColor:"rgba(255,255,255,0.7)", flexDirection:"row", textAlign:"center", alignItems:"center", padding:5, maxWidth:250}}>
-            <Text style={{fontSize:15}}>{Constantes.textpinguin[Math.floor(Math.random()*Constantes.textpinguin.length)]}</Text>
+            <Text style={{fontSize:15}}>{this.state.textPinguin}</Text>
           </View>
           :
           null

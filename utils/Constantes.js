@@ -1,6 +1,7 @@
 import {  Dimensions } from 'react-native';
 
 export default {
+  numberPinguin:10,
   screenHeight : Math.round(Dimensions.get('window').height),
   screenWidth : Math.round(Dimensions.get('window').width),
   imagesIce : [
@@ -47,6 +48,37 @@ export default {
     require("../assets/images/bear/5.png"),
   ],
 
+  imagesPinguin : [
+    require("../assets/images/bear/1.png"),
+    require("../assets/images/bear/2.png"),
+    require("../assets/images/bear/3.png"),
+    require("../assets/images/bear/4.png"),
+    require("../assets/images/bear/5.png"),
+  ],
+
+  pinguinsPosition:[
+    [2,2],[2,3],[2,4],[2,5],[2,6],[2,7],[2,8],
+    [3,2],[3,3],[3,4],[3,5],[3,6],[3,7],[3,8],
+    [4,2],[4,3],[4,4],[4,5],[4,6],[4,7],[4,8],
+    [5,2],[5,3],[5,4],[5,5],[5,6],[5,7],[5,8],
+    [6,2],[6,3],[6,4],[6,5],[6,6],[6,7],[6,8],
+    [7,2],[7,3],[7,4],[7,5],[7,6],[7,7],[7,8],
+  ],
+
+  icebergsPosition:[
+    {ices:[true,true,true,true,true,true,true,true,true,true], position:10},
+    {ices:[true,true,true,true,true,true,true,true,true,true], position:9},
+    {ices:[true,true,true,true,true,true,true,true,true,true], position:8},
+    {ices:[true,true,true,true,true,true,true,true,true,true], position:7},
+    {ices:[true,true,true,true,true,true,true,true,true,true], position:6},
+    {ices:[true,true,true,true,true,true,true,true,true,true], position:5},
+    {ices:[true,true,true,true,true,true,true,true,true,true], position:4},
+    {ices:[true,true,true,true,true,true,true,true,true,true], position:3},
+    {ices:[true,true,true,true,true,true,true,true,true,true], position:2},
+    {ices:[true,true,true,true,true,true,true,true,true,true], position:1},
+    {ices:[true,true,true,true,true,true,true,true,true,true], position:0},
+  ],
+
   textSeal : [
     "Guy, you sucks ...",
     "I never seen someone as bad.",
@@ -67,7 +99,23 @@ export default {
     "Fucking looser",
     "You are the worst player I ever seen",
     "Polar bear will die because of you",
-    "I'm not joking, stop to ridicule yoursekf",
+    "I'm not joking, stop to ridicule yourself",
+    "finally, you'r not so bad, in an other life",
+    "Antartic will totally melt before you win this game",
+    "If I catch you again to play as badly, I will kill you",
+    "Hopefully, you can't be ugly as the score you did",
+    "My brother is 2 year old, but better than you",
+    "One polar bear less, since I will kill myself to not see you play again",
+    "Fortunately, I will never cross you in real life",
+    "Water wets, fire burn, and you loose"
+
+  ],
+
+  textPinguin : [
+    "Fucking looser",
+    "You are the worst player I ever seen",
+    "Polar bear will die because of you",
+    "I'm not joking, stop to ridicule yourself",
     "finally, you'r not so bad, in an other life",
     "Antartic will totally melt before you win this game",
     "If I catch you again to play as badly, I will kill you",

@@ -10,6 +10,7 @@ import { createBottomTabNavigator } from 'react-navigation-tabs';
 import Home from './Home'
 import Play from './Play'
 import PlayBear from './PlayBear'
+import PlayPinguin from './PlayPinguin'
 import BestScores from './BestScores'
 import ContainerAccount from './ContainerAccount'
 import NoAccount from './NoAccount';
@@ -25,7 +26,7 @@ const PlayNavigation = createStackNavigator({
     }
   },
   Play: {
-    screen: PlayBear,
+    screen: PlayPinguin,
     headerMode: 'none',
     navigationOptions: {
         headerVisible: false,
