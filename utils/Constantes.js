@@ -2,6 +2,7 @@ import {  Dimensions } from 'react-native';
 
 export default {
   numberPinguin:10,
+  durationMove:100,
   screenHeight : Math.round(Dimensions.get('window').height),
   screenWidth : Math.round(Dimensions.get('window').width),
   imagesIce : [
@@ -100,7 +101,7 @@ export default {
     "You are the worst player I ever seen",
     "Polar bear will die because of you",
     "I'm not joking, stop to ridicule yourself",
-    "finally, you'r not so bad, in an other life",
+    "Finally, you'r not so bad, in an other life",
     "Antartic will totally melt before you win this game",
     "If I catch you again to play as badly, I will kill you",
     "Hopefully, you can't be ugly as the score you did",
@@ -112,19 +113,33 @@ export default {
   ],
 
   textPinguin : [
-    "Fucking looser",
-    "You are the worst player I ever seen",
-    "Polar bear will die because of you",
-    "I'm not joking, stop to ridicule yourself",
-    "finally, you'r not so bad, in an other life",
-    "Antartic will totally melt before you win this game",
-    "If I catch you again to play as badly, I will kill you",
-    "Hopefully, you can't be ugly as the score you did",
-    "My brother is 2 year old, but better than you",
-    "One polar bear less, since I will kill myself to not see you play again",
-    "Fortunately, I will never cross you in real life",
-    "Water wets, fire burn, and you loose"
+    "Do you use crack ?",
+    "Not again...",
+    "Stop, stop please !",
+    "Last person who made this score was a baby",
+    "It's hurt to see that disaster",
+    "Sometime, we dream that you stop playing",
+    "All pinguin in the world will come to kick your ass",
+    "You stink. Really.",
+    "Impossible, you loose again, no way !",
+    "Bravo, this score is still shity",
+    "I don't have any words to describe as poor you are",
+    "Fail. You failed. You failed again. And again."
+  ],
 
+  textWhale : [
+    "Are you sick ? go to sleep bitch",
+    "That's nasty",
+    "Poor person, you are nothing but a looser",
+    "nothing to say...",
+    "Whale will have arms before you win",
+    "Sorry, you failed",
+    "little pussy, it's though so simple",
+    "___",
+    "Impossible, you loose again, no way !",
+    "Bravo, this score is still shity",
+    "I don't have any words to describe as poor you are",
+    "Fail. You failed. You failed aagin. And again."
   ],
 
   images1 : [

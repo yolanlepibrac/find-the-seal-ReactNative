@@ -28,12 +28,15 @@ class IceCubeLineComponent extends Component {
   }
 
   componentDidMount = () => {
+    this.setBackgroundImages()
+  }
+
+  setBackgroundImages = () => {
     let sources = []
     for(i=0;i<this.props.ices.length;i++){
-      sources[i] = Constantes.imagesIce[Math.round(Math.random()*Constantes.imagesIce.length)]
+      sources[i] = Constantes.imagesIce[Math.trunc(Math.random()*Constantes.imagesIce.length)]
     }
     this.setState({ sources : sources })
-
   }
 
   componentWillUnmount = () => {
@@ -42,11 +45,7 @@ class IceCubeLineComponent extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.needUpdate !== prevProps.needUpdate) {
-      let sources = []
-      for(i=0;i<this.props.ices.length;i++){
-        sources[i] = Constantes.imagesIce[Math.round(Math.random()*Constantes.imagesIce.length)]
-      }
-      this.setState({ sources : sources })
+      this.setBackgroundImages()
     }
   }
 
