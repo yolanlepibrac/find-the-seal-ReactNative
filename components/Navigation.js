@@ -52,9 +52,9 @@ const BottomNavigation = createMaterialBottomTabNavigator(
         title: 'Play',
         tabBarIcon: ({ focused, tintColor }) => {
           if(focused){
-            return <Image source={require('../assets/images/playB.png')} style={{width: 40,height: 40}}/>
+            return <Image source={require('../assets/images/playB.png')} style={{width: 30,height: 30}}/>
           }else{
-            return <Image source={require('../assets/images/playW.png')} style={{width: 40,height: 40}}/>
+            return <Image source={require('../assets/images/playW.png')} style={{width: 30,height: 30}}/>
           }
         }
       },
@@ -65,9 +65,9 @@ const BottomNavigation = createMaterialBottomTabNavigator(
         title: 'Best',
         tabBarIcon: ({ focused, tintColor }) => {
           if(focused){
-            return <Image source={require('../assets/images/trophyB.png')} style={{width: 40,height: 40}}/>
+            return <Image source={require('../assets/images/trophyB.png')} style={{width: 30,height: 30}}/>
           }else{
-            return <Image source={require('../assets/images/trophyW.png')} style={{width: 40,height: 40}}/>
+            return <Image source={require('../assets/images/trophyW.png')} style={{width: 30,height: 30}}/>
           }
         }
       },
@@ -78,9 +78,9 @@ const BottomNavigation = createMaterialBottomTabNavigator(
         title: 'Account',
         tabBarIcon: ({ focused, tintColor }) => {
           if(focused){
-            return <Image source={require('../assets/images/profilB.png')} style={{width: 40,height: 40}}/>
+            return <Image source={require('../assets/images/profilB.png')} style={{width: 30,height: 30}}/>
           }else{
-            return <Image source={require('../assets/images/profilW.png')} style={{width: 40,height: 40}}/>
+            return <Image source={require('../assets/images/profilW.png')} style={{width: 30,height: 30}}/>
           }
         }
       },
@@ -96,7 +96,6 @@ const BottomNavigation = createMaterialBottomTabNavigator(
   }
 );
 
-//props => <TopNavigation {...props} logout={this.props.logout}/>
 
 const Navigation = createStackNavigator({
   NoAccount: {

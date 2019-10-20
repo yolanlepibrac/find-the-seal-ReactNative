@@ -10,7 +10,7 @@ import Signup from './Signup';
 import Login from './Login';
 import Constantes from "../utils/Constantes";
 
-//import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-community/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
@@ -81,28 +81,20 @@ class NoAccountComponent extends React.Component {
 
   componentDidMount = () => {
     this.setState({displayLoading:false});
-    //this.login("03", "03")
-    //this.props.navigation.navigate("TopNavigation", {email:emailStored})
-    /*
     AsyncStorage.getItem('email').then((emailStored) => {
-      if(emailStored){
-        Utils.loginAlreadyConnected(emailStored, this, () => {
-          this.props.navigation.navigate("TopNavigation", {email:emailStored});
-          this.stayLog(emailStored)
-        })
+      console.log(emailStored)
+      if(emailStored && emailStored !== undefined && emailStored!== ""){
+        this.loginAlreadyConnected(emailStored)
       }
     })
-    */
   }
 
   stayLog = async email => {
-    /*
     try {
       await AsyncStorage.setItem('email', email);
     } catch (error) {
       console.log(error.message);
     }
-    */
   }
 
   setNewBestScoreWhenLogin = (userData) => {
@@ -125,38 +117,47 @@ class NoAccountComponent extends React.Component {
     });
   }
 
+  loginAlreadyConnected = (email) => {
+    this.setState({displayLoading:true})
+    API.getUserDataByEmail(email).then((dataUser)=> {
+      this.getInfoWhenLogin(dataUser)
+    })
+  }
+
   login = (email, password) => {
     //Keyboard.dismiss()
     this.setState({displayLoading:true})
     API.login(email, password).then((dataUser)=>{
-
-      console.log(dataUser.data.userData.id)
-      console.log("log")
-      let newAccountState = dataUser.data.userData;
-      let connected = {connected:true}
-      if(this.props.connectedWitouthAccount===true){
-        if(newAccountState.bestScore<this.props.accountState.account.bestScore){
-          newAccountState.bestScore=this.props.accountState.account.bestScore
-          this.setNewBestScoreWhenLogin(dataUser.data.userData)
-        }else{
-          this.getBestScore(dataUser.data.userData.id, ()=> {
-            this.props.connect()
-          })
-        }
-      }else{
-        this.getBestScore(dataUser.data.userData.id, ()=> {
-          this.props.navigation.navigate("Home")
-        })
-      }
-      this.props.changeAccountState({...newAccountState, ...connected});
-      this.stayLog(dataUser.data.userData.email)
-
+      this.getInfoWhenLogin(dataUser)
     }).catch(error => {
         this._showAlert('Error', "Error, please check your connexion")
         console.log(error)
         this.setState({displayLoading:false})
     });
 
+  }
+
+  getInfoWhenLogin = (dataUser) => {
+    console.log(dataUser.data.userData.id)
+    console.log("log")
+    let newAccountState = dataUser.data.userData;
+    let connected = {connected:true}
+    if(this.props.connectedWitouthAccount===true){
+      if(newAccountState.bestScore<this.props.accountState.account.bestScore){
+        newAccountState.bestScore=this.props.accountState.account.bestScore
+        this.setNewBestScoreWhenLogin(dataUser.data.userData)
+      }else{
+        this.getBestScore(dataUser.data.userData.id, ()=> {
+          this.props.connect()
+        })
+      }
+    }else{
+      this.getBestScore(dataUser.data.userData.id, ()=> {
+        this.props.navigation.navigate("Home")
+      })
+    }
+    this.props.changeAccountState({...newAccountState, ...connected});
+    this.stayLog(dataUser.data.userData.email)
   }
 
   continueWithoutAccount = () => {
@@ -297,7 +298,7 @@ class NoAccountComponent extends React.Component {
           {this.state.popupSignUp ?
             <View style={{width:screenWidth*0.9, marginTop:5, height:"100%"}}>
               <Signup signup={this.signup} displayLoading={this.displayLoading} quit={this.quitLoginAndSignUp} changeState={this.changeState} changeImageProfil={this.changeImageProfil}
-            email={this.state.email} userName={this.state.userName} imageProfil={this.state.imageProfil} password={this.state.password} cpassword={this.state.cpassword} imageProfil={this.state.imageProfil}/>
+            email={this.state.email} userName={this.state.userName} password={this.state.password} cpassword={this.state.cpassword} imageProfil={this.state.imageProfil}/>
             </View>
             : null
            }

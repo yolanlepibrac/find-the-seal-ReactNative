@@ -5,7 +5,7 @@ const initialState = {
 
   accountStateRedux:{
     bestScores : [],
-    indexRank:10000,
+    indexRank:0,
     account:{
       bestScore:0,
       id:2000,

@@ -8,7 +8,7 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import Constantes from "../utils/Constantes";
 import NoAccount from './NoAccount';
 
-//import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import ItemEditProfile from "./ItemEditProfile"
 import API from "../utils/API"
@@ -90,22 +90,6 @@ class AccountContainerComponent extends React.Component {
   }
 
 
-  setToDatabase = () => {
-    /*
-    this.toggleChangeAccountState();
-    let account = this.state.account
-    account.email = this.state.email
-    account.userName = this.state.userName.toLowerCase()
-    account.phone = this.state.phone
-    account.imageProfil = this.state.imageProfil
-    API.setUserInfo(account, this.props.accountState.account.id).then((data) => {
-      this.props.changeAccountState(account);
-      this.setState({account:account})
-      this.setState({toggleChangeAccountState:false})
-    })
-    */
-  }
-
   onInputChange = (key, value) => {
     if(key === "userName"){
       value = value.toLowerCase()
@@ -127,13 +111,12 @@ class AccountContainerComponent extends React.Component {
   }
 
   quitLog = async () => {
-    /*
+    console.log("logout")
     try {
       await AsyncStorage.removeItem('email');
     } catch (error) {
       console.log(error.message);
     }
-    */
   }
 
   changePassword = () => {
@@ -301,7 +284,7 @@ class AccountContainerComponent extends React.Component {
                     <Text style={{height:30, fontSize:15,  marginLeft:10, color:"white"}}>Old Password
                     </Text>
                     <View style={{flexDirection:"row", width:"100%",  height:50}}>
-                      <TextInput onChangeText={text => this.onChangeOldPassword(text)} value={this.state.oldPassword} autoCompleteType={"password"}  style={{borderWidth:1, height:35, padding:0, margin:0, paddingLeft:10, flex:1, width:"100%", color:"white" }} secureTextEntry={this.state.secureOldPassword}>
+                      <TextInput onChangeText={text => this.onChangeOldPassword(text)} value={this.state.oldPassword} autoCompleteType={"password"}  style={{borderWidth:1, height:35, padding:0, margin:0, paddingLeft:10, flex:1, width:"100%", color:"white", borderColor:"white" }} secureTextEntry={this.state.secureOldPassword}>
                       </TextInput >
                       <TouchableOpacity onPress={this.toggleSecureOldPassword} style={{position:"absolute", width:30, height:35, top:0, right:20, }}>
                         <Image style={{ width:35, height:35}} source={this.state.secureOldPassword?require('../assets/images/oeil.png'):require('../assets/images/oeilSelect.png')}/>
@@ -310,7 +293,7 @@ class AccountContainerComponent extends React.Component {
                     <Text style={{height:30, fontSize:15,  marginLeft:10, color:"white"}}>Confirm Old Password
                     </Text>
                     <View style={{flexDirection:"row", width:"100%",  height:50}}>
-                      <TextInput onChangeText={text => this.onChangeNewCPassword(text)} value={this.state.newCPassword} autoCompleteType={"password"}  style={{borderWidth:1, height:35, padding:0, margin:0, paddingLeft:10, flex:1, width:"100%", color:"white" }} secureTextEntry={this.state.secureNewCPassword}>
+                      <TextInput onChangeText={text => this.onChangeNewCPassword(text)} value={this.state.newCPassword} autoCompleteType={"password"}  style={{borderWidth:1, height:35, padding:0, margin:0, paddingLeft:10, flex:1, width:"100%", color:"white", borderColor:"white" }} secureTextEntry={this.state.secureNewCPassword}>
                       </TextInput >
                       <TouchableOpacity onPress={this.toggleSecureNewCPassword} style={{position:"absolute", width:30, height:35, top:0, right:20, }}>
                         <Image style={{ width:35, height:35,}} source={this.state.secureNewCPassword?require('../assets/images/oeil.png'):require('../assets/images/oeilSelect.png')}/>
@@ -319,7 +302,7 @@ class AccountContainerComponent extends React.Component {
                     <Text style={{height:30, fontSize:15,  marginLeft:10, color:"white"}}>New Password
                     </Text>
                     <View style={{flexDirection:"row", width:"100%",  height:50}}>
-                      <TextInput onChangeText={text => this.onChangeNewPassword(text)} value={this.state.newPassword} autoCompleteType={"password"}  style={{borderWidth:1, height:35, padding:0, margin:0, paddingLeft:10, flex:1, width:"100%", color:"white" }} secureTextEntry={this.state.secureNewPassword}>
+                      <TextInput onChangeText={text => this.onChangeNewPassword(text)} value={this.state.newPassword} autoCompleteType={"password"}  style={{borderWidth:1, height:35, padding:0, margin:0, paddingLeft:10, flex:1, width:"100%", color:"white", borderColor:"white" }} secureTextEntry={this.state.secureNewPassword}>
                       </TextInput >
                       <TouchableOpacity onPress={this.toggleSecureNewPassword} style={{position:"absolute", width:30, height:35, top:0, right:20, }}>
                         <Image style={{ width:35, height:35,}} source={this.state.secureNewPassword?require('../assets/images/oeil.png'):require('../assets/images/oeilSelect.png')}/>
